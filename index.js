@@ -15,11 +15,13 @@ app.use(express.urlencoded({ extended: false }))
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.o8cqw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-console.log(uri);
+
 
 
 client.connect(err => {
   const serviceCollection = client.db("rental-rides").collection("services");
+  const reviewCollection = client.db("rental-rides").collection("review");
+  const adminCollection = client.db("rental-rides").collection("admin");
  
 
   app.post('/addService', (req, res) => {
@@ -38,6 +40,38 @@ client.connect(err => {
     serviceCollection.insertOne({title, price, img})
       .then(result => {
         res.status(200).send(result.insertedCount > 0)
+      })
+
+    })
+
+    app.get('/services', (req, res) => {
+      serviceCollection.find()
+        .toArray((err, services) => {
+          res.send(services)
+        })
+    })
+
+    app.post ('/addReview', (req, res) => {
+      const addReview = req.body;
+      reviewCollection.insertOne(addReview)
+      .then(result => {
+        res.send(result.insertedCount > 0)
+      })
+
+    })
+
+    app.get('/review' , (req, res) => {
+      reviewCollection.find()
+      .toArray((err, review) => {
+        res.send(review)
+      })
+    })
+
+    app.post ('/addAdmin', (req, res) => {
+      const addAdmin = req.body;
+      adminCollection.insertOne(addAdmin)
+      .then(result => {
+        res.send(result.insertedCount > 0)
       })
 
     })
