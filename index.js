@@ -22,6 +22,7 @@ client.connect(err => {
   const serviceCollection = client.db("rental-rides").collection("services");
   const reviewCollection = client.db("rental-rides").collection("review");
   const adminCollection = client.db("rental-rides").collection("admin");
+  const hireCollection = client.db("rental-rides").collection("hire");
  
 
   app.post('/addService', (req, res) => {
@@ -75,6 +76,45 @@ client.connect(err => {
       })
 
     })
+
+    app.post('/admin/' , (req, res) =>{
+      const email= req.body;
+      adminCollection.find(email)
+      .toArray((err, result) => {
+        res.send(result.length > 0)
+      })
+    })
+
+     app.post ('/hiredService' , (req, res) => {
+       const hireData = req.body;
+       hireCollection.insertOne(hireData)
+       .then(result =>{
+         res.send(result.insertedCount > 0)
+       })
+     })
+
+     app.get('/allHiredCar', (req, res) => {
+       
+      hireCollection.find()
+      .toArray((err, hired) => {
+        res.send(hired)
+      })
+    })
+    //  app.get('/hiredCar', (req, res) => {
+       
+    //   hireCollection.find()
+    //   .toArray((err, result) => {
+    //     res.send(result)
+    //   })
+    // })
+
+     app.post('/hiredCar', (req, res) => {
+       const email = req.body.email;
+       hireCollection.find({email})
+       .toArray((err, documents) => {
+         res.send(documents);
+       })
+     })
 
 
 });
