@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const fileUpload = require("express-fileupload");
 require("dotenv").config();
 const port = process.env.PORT || 4000;
+const ObjectId = require("mongodb").ObjectId;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -69,15 +70,27 @@ client.connect((err) => {
     });
   });
 
-  app.post("/admin/", (req, res) => {
+  app.post("/admin", (req, res) => {
     const email = req.body;
     adminCollection.find(email).toArray((err, result) => {
       res.send(result.length > 0);
     });
   });
 
+  app.put("/updateStatus", (req, res) => {
+    const orderStatus = req.body.orderStatus;
+
+    hireCollection
+      .updateOne({ _id: ObjectId(req.body._id) }, { $set: { orderStatus } })
+      .then((result) => {
+        
+        res.send(true);
+      });
+  });
+
   app.post("/hiredService", (req, res) => {
     const hireData = req.body;
+
     hireCollection.insertOne(hireData).then((result) => {
       res.send(result.insertedCount > 0);
     });
