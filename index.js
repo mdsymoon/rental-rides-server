@@ -108,6 +108,13 @@ client.connect((err) => {
       res.send(documents);
     });
   });
+
+  app.delete('/deleteHired' , (req, res) => {
+    hireCollection.deleteOne({_id: ObjectId(req.body._id)})
+    .then(result => {
+      res.send(true)
+    })
+  })
 });
 
 app.get("/", (req, res) => {
